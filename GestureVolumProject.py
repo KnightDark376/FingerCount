@@ -1,11 +1,11 @@
 import cv2
 import time
 import numpy as np
-import HandTrackingModule as htm
+import HandTrackingModule as htm #import thư viên HandTrackingModule
 import math
 from ctypes import cast, POINTER
 from comtypes import CLSCTX_ALL
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume #import thư viện điều khiển volum
 
 ################################
 wCam, hCam = 840, 680
@@ -18,7 +18,7 @@ pTime = 0
 
 detector = htm.handDetector(detectionCon=0.7)
 
-devices = AudioUtilities.GetSpeakers()
+devices = AudioUtilities.GetSpeakers() #kết nối với loa
 interface = devices.Activate(
     IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
 volume = cast(interface, POINTER(IAudioEndpointVolume))
@@ -53,10 +53,10 @@ while True:
         # Hand range 50 - 300
         # Volume Range -65 - 0
 
-        vol = np.interp(length, [20, 200], [minVol, maxVol])
+        vol = np.interp(length, [20, 200], [minVol, maxVol]) #Scale VolBar
         volBar = np.interp(length, [20, 200], [400, 150])
         print(volBar)
-        volPer = np.interp(length, [20, 200], [0, 100])
+        volPer = np.interp(length, [20, 200], [0, 100]) #Scale VolPer
         # print(int(length), vol)
         volume.SetMasterVolumeLevel(vol, None)
 
@@ -64,17 +64,17 @@ while True:
             cv2.circle(farme, (cx, cy), 15, (0, 255, 0), cv2.FILLED)
 
     cv2.rectangle(farme, (50, 150), (85, 400), (255, 0, 0), 3)
-    cv2.rectangle(farme, (50, int(volBar)), (85, 400), (0, 255, 0), cv2.FILLED)
+    cv2.rectangle(farme, (50, int(volBar)), (85, 400), (0, 255, 0), cv2.FILLED) #Vẽ VolBar
     cv2.putText(farme, f'{int(volPer)} %', (40, 450), cv2.FONT_HERSHEY_COMPLEX,
-                1, (0, 0, 255), 3)
+                1, (0, 0, 255), 3) #Hiển thi VolPer
 
-
+    ######tính FPS#############################################################
     cTime = time.time()
     fps = 1 / (cTime - pTime)
     pTime = cTime
     cv2.putText(farme, f'FPS: {int(fps)}', (40, 50), cv2.FONT_HERSHEY_COMPLEX,
                 1, (255, 0, 0), 3)
-
+    ###########################################################################
     cv2.imshow("Video", farme)
     if cv2.waitKey(1) & 0xFF == ord(' '):
         break
